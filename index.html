@@ -41,7 +41,22 @@
             position: relative;
         }
 
-        /* Arka planda yüzen neon ışık hüzmeleri */
+        /* --- SONUÇ EKRANI İÇİN DİNAMİK PARLAMA (GLOW) EFEKTİ --- */
+        .dynamic-glow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 100%);
+            transition: background 1s ease;
+            z-index: -3;
+            pointer-events: none;
+            mix-blend-mode: screen;
+        }
+
+        /* Arka planda yüzen neon ışık hüzmeleri (Senin Kodun) */
         body::before {
             content: '';
             position: fixed;
@@ -212,6 +227,7 @@
             border: 1px solid rgba(139, 92, 246, 0.4);
             box-shadow: inset 0 0 30px rgba(139, 92, 246, 0.15), 0 10px 40px -10px var(--accent-glow);
             text-shadow: 0 0 20px var(--accent-glow);
+            transition: all 0.5s ease;
         }
 
         .progress-bar {
@@ -292,7 +308,6 @@
             transition: width 0.2s, height 0.2s, background-color 0.2s, box-shadow 0.2s;
         }
 
-        /* Tıklanabilir bir şeyin (butonun) üzerindeyken imlecin durumu */
         #custom-cursor.hovering {
             width: 45px;
             height: 45px;
@@ -301,7 +316,6 @@
             box-shadow: 0 0 20px var(--accent-glow), inset 0 0 10px var(--accent-glow);
         }
 
-        /* Tıklama sırasındaki dalga efekti (Ripple) */
         .cursor-ripple {
             position: fixed;
             border: 2px solid var(--accent-hover);
@@ -320,7 +334,6 @@
             }
         }
         
-        /* Mobilde (dokunmatik ekranda) özel imleci ve tilti kapatmak en iyisidir */
         @media (pointer: coarse) {
             * { cursor: auto !important; }
             #custom-cursor, .cursor-ripple { display: none !important; }
@@ -330,6 +343,9 @@
     </style>
 </head>
 <body>
+
+    <!-- Yemeğe göre aydınlanacak parlama katmanı -->
+    <div class="dynamic-glow" id="glow-layer"></div>
 
     <!-- Özel İmleç Elementi -->
     <div id="custom-cursor"></div>
@@ -345,11 +361,9 @@
                 <div class="progress-fill" id="progress"></div>
             </div>
 
-            <!-- Soruların ve butonların kayacağı alan -->
             <div id="quiz-content">
                 <div id="question-text" class="question-title">Loading...</div>
                 <div id="options-container" class="options-grid">
-                    <!-- Buttons will be injected here via JS -->
                 </div>
             </div>
         </div>
@@ -420,6 +434,20 @@
             { name: "💪 Protein Bar", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "medium" } }
         ];
 
+        // --- YEMEKLERE GÖRE RENKLER ---
+        const colorMap = {
+            "🌯 Chicken Wrap": "#f59e0b",
+            "🍔 Burger Menu": "#ef4444",
+            "🍕 Pizza Slice": "#dc2626",
+            "🍜 Noodles": "#84cc16",
+            "🥪 Toast Sandwich": "#f97316",
+            "🍫 Granola Bar": "#e024c3",
+            "🥨 Crackers": "#eab308",
+            "🍎 Fruit Bowl": "#10b981",
+            "🥡 Instant Ramen": "#f59e0b",
+            "💪 Protein Bar": "#3b82f6"
+        };
+
         let currentQuestionIndex = 0;
         let userAnswers = {};
 
@@ -431,8 +459,8 @@
         const snackResultEl = document.getElementById('snack-result');
         const progressEl = document.getElementById('progress');
         const customCursor = document.getElementById('custom-cursor');
+        const glowLayer = document.getElementById('glow-layer');
 
-        // --- İMLEÇ (CURSOR) TAKİP VE TIKLAMA MANTIĞI ---
         let mouseX = window.innerWidth / 2;
         let mouseY = window.innerHeight / 2;
 
@@ -440,14 +468,11 @@
             mouseX = e.clientX;
             mouseY = e.clientY;
             
-            // İmleci doğrudan fareye yapıştır
             customCursor.style.left = mouseX + 'px';
             customCursor.style.top = mouseY + 'px';
         });
 
-        // Tıklama efekti (Ripple)
         document.addEventListener('click', (e) => {
-            // Sadece fare ile tıklanıyorsa çalışsın (dokunmatik cihazları dışlamak için basit bir kontrol)
             if (e.clientX === 0 && e.clientY === 0) return;
 
             const ripple = document.createElement('div');
@@ -469,11 +494,9 @@
             });
         }
         
-        // --- 3D TILT EFEKTİ MANTIĞI ---
         const panels = document.querySelectorAll('.glass-panel');
         panels.forEach(panel => {
             panel.addEventListener('mousemove', (e) => {
-                // Mobilde tilt çalışmasın diye basit genişlik kontrolü
                 if(window.innerWidth < 768) return; 
 
                 const rect = panel.getBoundingClientRect();
@@ -483,7 +506,6 @@
                 const centerX = rect.width / 2;
                 const centerY = rect.height / 2;
                 
-                // Fare konumuna göre X ve Y eksenlerinde döndürme açıları
                 const rotateX = ((y - centerY) / centerY) * -10; 
                 const rotateY = ((x - centerX) / centerX) * 10;
                 
@@ -491,7 +513,7 @@
             });
             
             panel.addEventListener('mouseleave', () => {
-                panel.style.transform = `rotateX(0deg) rotateY(0deg)`;
+                panel.style.transform = 'rotateX(0deg) rotateY(0deg)';
             });
         });
 
@@ -500,10 +522,16 @@
             userAnswers = {};
             quizContainerEl.classList.remove('hidden');
             resultContainerEl.classList.add('hidden');
-            quizContainerEl.style.transform = 'none'; // Tilt'i sıfırla
+            quizContainerEl.style.transform = 'none'; 
             
             quizContentEl.classList.remove('slide-out-left', 'slide-in-right');
             
+            // Parlama Efektlerini Sıfırla
+            glowLayer.style.background = 'radial-gradient(circle, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 100%)';
+            snackResultEl.style.borderColor = 'rgba(139, 92, 246, 0.4)';
+            snackResultEl.style.boxShadow = 'inset 0 0 30px rgba(139, 92, 246, 0.15), 0 10px 40px -10px var(--accent-glow)';
+            snackResultEl.style.textShadow = '0 0 20px var(--accent-glow)';
+
             renderQuestion();
         }
 
@@ -574,14 +602,25 @@
             quizContainerEl.classList.add('hidden');
             snackResultEl.textContent = bestSnack.name;
             resultContainerEl.classList.remove('hidden');
-            resultContainerEl.style.transform = 'none'; // Sonuç ekranı gelirken düz gelsin
+            resultContainerEl.style.transform = 'none'; 
             
+            // --- PARLAMA EFEKTİNİ TETİKLE ---
+            const glowColor = colorMap[bestSnack.name] || '#8b5cf6';
+            
+            // Arka planda kocaman bir renk hüzmesi
+            glowLayer.style.background = `radial-gradient(circle, ${glowColor}44 0%, transparent 70%)`;
+            
+            // Cam kutunun ve yazının rengi
+            snackResultEl.style.borderColor = glowColor;
+            snackResultEl.style.boxShadow = `inset 0 0 30px ${glowColor}33, 0 10px 40px -10px ${glowColor}88`;
+            snackResultEl.style.textShadow = `0 0 20px ${glowColor}`;
+
             attachCursorHoverEvents();
-            fireConfetti();
+            fireConfetti(glowColor); // Konfetiler bile o renkte patlayacak!
         }
 
-        function fireConfetti() {
-            const colors = ['#8b5cf6', '#3b82f6', '#a855f7', '#60a5fa', '#ffffff'];
+        function fireConfetti(accentColor) {
+            const colors = [accentColor, '#ffffff', '#e2e8f0'];
             for (let i = 0; i < 50; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
