@@ -25,6 +25,8 @@
             margin: 0;
             padding: 0;
             font-family: 'Inter', sans-serif;
+            /* Standart imleci tüm sitede gizle */
+            cursor: none !important;
         }
 
         body {
@@ -77,12 +79,15 @@
             width: 100%;
             max-width: 480px;
             text-align: center;
-            transition: all 0.3s ease;
             z-index: 1;
+            /* Tilt efekti için perspektif */
+            perspective: 1000px; 
         }
 
         .header-section {
             margin-bottom: 30px;
+            /* Tilt olurken başlığın da biraz havada kalması için */
+            transform: translateZ(30px);
         }
 
         h1 {
@@ -103,8 +108,8 @@
             font-weight: 400;
         }
 
-        /* Cam Panel (Glassmorphism) Efekti */
-        #quiz-container, #result-container {
+        /* Cam Panel (Glassmorphism) + Tilt Efekti */
+        .glass-panel {
             background: rgba(26, 29, 36, 0.5);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
@@ -114,7 +119,14 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05);
             width: 100%;
             position: relative;
-            overflow: hidden;
+            /* Tilt efekti için geçişler (fare dışındayken pürüzsüz dönsün diye) */
+            transition: transform 0.2s ease-out;
+            transform-style: preserve-3d;
+        }
+
+        /* Panelin içindeki öğelerin de 3D düzlemde havaya kalkması için */
+        .glass-panel > * {
+            transform: translateZ(20px);
         }
 
         .question-title {
@@ -141,13 +153,13 @@
             font-size: 1rem;
             font-weight: 600;
             border-radius: 16px;
-            cursor: pointer;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             width: 100%;
             position: relative;
             overflow: hidden;
         }
 
+        /* Buton üzerine gelindiğinde */
         button:hover {
             background-color: rgba(139, 92, 246, 0.1);
             border-color: rgba(139, 92, 246, 0.5);
@@ -229,12 +241,12 @@
         }
 
         @keyframes slideOutLeft {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(-40px); opacity: 0; }
+            from { transform: translateX(0) translateZ(20px); opacity: 1; }
+            to { transform: translateX(-40px) translateZ(20px); opacity: 0; }
         }
         @keyframes slideInRight {
-            from { transform: translateX(40px); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from { transform: translateX(40px) translateZ(20px); opacity: 0; }
+            to { transform: translateX(0) translateZ(20px); opacity: 1; }
         }
 
         /* Neon Partikül (Confetti) Efekti */
@@ -263,9 +275,64 @@
         .hidden {
             display: none !important;
         }
+
+        /* --- ÖZEL NEON İMLEÇ TASARIMI --- */
+        #custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            box-shadow: 0 0 10px var(--accent-glow), inset 0 0 5px var(--accent-glow);
+            transition: width 0.2s, height 0.2s, background-color 0.2s, box-shadow 0.2s;
+        }
+
+        /* Tıklanabilir bir şeyin (butonun) üzerindeyken imlecin durumu */
+        #custom-cursor.hovering {
+            width: 45px;
+            height: 45px;
+            background-color: rgba(139, 92, 246, 0.15);
+            border-width: 1px;
+            box-shadow: 0 0 20px var(--accent-glow), inset 0 0 10px var(--accent-glow);
+        }
+
+        /* Tıklama sırasındaki dalga efekti (Ripple) */
+        .cursor-ripple {
+            position: fixed;
+            border: 2px solid var(--accent-hover);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            opacity: 1;
+            pointer-events: none;
+            z-index: 9998;
+            animation: rippleEffect 0.4s ease-out forwards;
+        }
+
+        @keyframes rippleEffect {
+            to {
+                transform: translate(-50%, -50%) scale(2.5);
+                opacity: 0;
+            }
+        }
+        
+        /* Mobilde (dokunmatik ekranda) özel imleci ve tilti kapatmak en iyisidir */
+        @media (pointer: coarse) {
+            * { cursor: auto !important; }
+            #custom-cursor, .cursor-ripple { display: none !important; }
+            .glass-panel { transform: none !important; transition: none !important; }
+            .glass-panel > * { transform: none !important; }
+        }
     </style>
 </head>
 <body>
+
+    <!-- Özel İmleç Elementi -->
+    <div id="custom-cursor"></div>
 
     <div id="app-container">
         <div class="header-section">
@@ -273,7 +340,7 @@
             <p class="subtitle" id="main-subtitle">Let's find the perfect choice for you.</p>
         </div>
 
-        <div id="quiz-container">
+        <div id="quiz-container" class="glass-panel">
             <div class="progress-bar">
                 <div class="progress-fill" id="progress"></div>
             </div>
@@ -287,10 +354,10 @@
             </div>
         </div>
 
-        <div id="result-container" class="hidden">
+        <div id="result-container" class="glass-panel hidden">
             <p class="subtitle">Your optimal snack is:</p>
             <div id="snack-result" class="result-snack">...</div>
-            <button class="primary" id="restart-btn" onclick="startOver(event)">Find Another Snack</button>
+            <button class="primary hoverable" id="restart-btn" onclick="startOver(event)">Find Another Snack</button>
         </div>
     </div>
 
@@ -359,18 +426,82 @@
         const questionTextEl = document.getElementById('question-text');
         const optionsContainerEl = document.getElementById('options-container');
         const quizContainerEl = document.getElementById('quiz-container');
-        const quizContentEl = document.getElementById('quiz-content'); // Animasyon için wrapper
+        const quizContentEl = document.getElementById('quiz-content');
         const resultContainerEl = document.getElementById('result-container');
         const snackResultEl = document.getElementById('snack-result');
         const progressEl = document.getElementById('progress');
+        const customCursor = document.getElementById('custom-cursor');
+
+        // --- İMLEÇ (CURSOR) TAKİP VE TIKLAMA MANTIĞI ---
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // İmleci doğrudan fareye yapıştır
+            customCursor.style.left = mouseX + 'px';
+            customCursor.style.top = mouseY + 'px';
+        });
+
+        // Tıklama efekti (Ripple)
+        document.addEventListener('click', (e) => {
+            // Sadece fare ile tıklanıyorsa çalışsın (dokunmatik cihazları dışlamak için basit bir kontrol)
+            if (e.clientX === 0 && e.clientY === 0) return;
+
+            const ripple = document.createElement('div');
+            ripple.classList.add('cursor-ripple');
+            ripple.style.left = e.clientX + 'px';
+            ripple.style.top = e.clientY + 'px';
+            document.body.appendChild(ripple);
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 400);
+        });
+
+        function attachCursorHoverEvents() {
+            const hoverables = document.querySelectorAll('button');
+            hoverables.forEach(el => {
+                el.addEventListener('mouseenter', () => customCursor.classList.add('hovering'));
+                el.addEventListener('mouseleave', () => customCursor.classList.remove('hovering'));
+            });
+        }
+        
+        // --- 3D TILT EFEKTİ MANTIĞI ---
+        const panels = document.querySelectorAll('.glass-panel');
+        panels.forEach(panel => {
+            panel.addEventListener('mousemove', (e) => {
+                // Mobilde tilt çalışmasın diye basit genişlik kontrolü
+                if(window.innerWidth < 768) return; 
+
+                const rect = panel.getBoundingClientRect();
+                const x = e.clientX - rect.left; 
+                const y = e.clientY - rect.top;  
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                // Fare konumuna göre X ve Y eksenlerinde döndürme açıları
+                const rotateX = ((y - centerY) / centerY) * -10; 
+                const rotateY = ((x - centerX) / centerX) * 10;
+                
+                panel.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            
+            panel.addEventListener('mouseleave', () => {
+                panel.style.transform = `rotateX(0deg) rotateY(0deg)`;
+            });
+        });
 
         function initApp() {
             currentQuestionIndex = 0;
             userAnswers = {};
             quizContainerEl.classList.remove('hidden');
             resultContainerEl.classList.add('hidden');
+            quizContainerEl.style.transform = 'none'; // Tilt'i sıfırla
             
-            // Animasyon sınıflarını temizle
             quizContentEl.classList.remove('slide-out-left', 'slide-in-right');
             
             renderQuestion();
@@ -388,33 +519,30 @@
             q.options.forEach(option => {
                 const btn = document.createElement('button');
                 btn.textContent = option.label;
+                btn.classList.add('hoverable'); 
                 btn.onclick = (e) => {
-                    // Butonun içe çökme animasyonunu tetikle
                     btn.classList.add('clicked-effect');
                     
-                    // 150ms sonra yeni soruya geçiş işlemini başlat
                     setTimeout(() => {
                         handleAnswer(q.id, option.value);
                     }, 150);
                 };
                 optionsContainerEl.appendChild(btn);
             });
+            
+            attachCursorHoverEvents();
         }
 
         function handleAnswer(questionId, answerValue) {
             userAnswers[questionId] = answerValue;
             currentQuestionIndex++;
             
-            // İçeriği sola kaydırarak gizle
             quizContentEl.classList.add('slide-out-left');
             quizContentEl.classList.remove('slide-in-right');
 
-            // Kayma animasyonu bittikten sonra (250ms) yeni soruyu yükle
             setTimeout(() => {
                 if (currentQuestionIndex < questions.length) {
                     renderQuestion();
-                    
-                    // Yeni soruyu sağdan kaydırarak getir
                     quizContentEl.classList.remove('slide-out-left');
                     quizContentEl.classList.add('slide-in-right');
                 } else {
@@ -446,31 +574,28 @@
             quizContainerEl.classList.add('hidden');
             snackResultEl.textContent = bestSnack.name;
             resultContainerEl.classList.remove('hidden');
+            resultContainerEl.style.transform = 'none'; // Sonuç ekranı gelirken düz gelsin
             
-            // Sonuç ekranında neon partikülleri patlat!
+            attachCursorHoverEvents();
             fireConfetti();
         }
 
         function fireConfetti() {
             const colors = ['#8b5cf6', '#3b82f6', '#a855f7', '#60a5fa', '#ffffff'];
-            // 50 adet partikül oluştur
             for (let i = 0; i < 50; i++) {
                 const particle = document.createElement('div');
                 particle.classList.add('particle');
                 
-                // Rastgele yön ve mesafe hesapla
                 const tx = (Math.random() - 0.5) * 600 + 'px';
                 const ty = (Math.random() - 0.5) * 600 + 'px';
                 particle.style.setProperty('--tx', tx);
                 particle.style.setProperty('--ty', ty);
                 
-                // Rastgele renk ve parlama
                 particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
                 particle.style.boxShadow = `0 0 12px ${particle.style.backgroundColor}`;
 
                 document.body.appendChild(particle);
 
-                // 1 saniye sonra partikülü DOM'dan temizle
                 setTimeout(() => {
                     particle.remove();
                 }, 1000);
