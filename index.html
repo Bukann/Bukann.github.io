@@ -41,6 +41,30 @@
             position: relative;
         }
 
+        /* --- SİBERPUNK ARKA PLAN RESMİ --- */
+        .cyberpunk-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url('image_813ba0.jpg'); /* Resim dosyan burada çağrılıyor */
+            background-size: cover;
+            background-position: center;
+            z-index: -5;
+        }
+
+        /* Cam paneli ve yazıları net göstermek için hafif karartma */
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 15, 0.7); 
+            z-index: -4;
+        }
+
         /* --- SONUÇ EKRANI İÇİN DİNAMİK PARLAMA (GLOW) EFEKTİ --- */
         .dynamic-glow {
             position: fixed;
@@ -56,7 +80,7 @@
             mix-blend-mode: screen;
         }
 
-        /* Arka planda yüzen neon ışık hüzmeleri (Senin Kodun) */
+        /* Arka planda yüzen neon ışık hüzmeleri */
         body::before {
             content: '';
             position: fixed;
@@ -66,7 +90,7 @@
             height: 70vw;
             background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 60%);
             border-radius: 50%;
-            z-index: -1;
+            z-index: -2;
             animation: floatGlow 15s ease-in-out infinite alternate;
             pointer-events: none;
         }
@@ -80,7 +104,7 @@
             height: 60vw;
             background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 60%);
             border-radius: 50%;
-            z-index: -1;
+            z-index: -2;
             animation: floatGlow 12s ease-in-out infinite alternate-reverse;
             pointer-events: none;
         }
@@ -125,16 +149,16 @@
 
         /* Cam Panel (Glassmorphism) + Tilt Efekti */
         .glass-panel {
-            background: rgba(26, 29, 36, 0.5);
+            background: rgba(26, 29, 36, 0.65); /* Arka plan resmi eklendiği için camı azıcık daha opak yaptık */
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 24px;
             padding: 35px 25px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255,255,255,0.05);
             width: 100%;
             position: relative;
-            /* Tilt efekti için geçişler (fare dışındayken pürüzsüz dönsün diye) */
+            /* Tilt efekti için geçişler */
             transition: transform 0.2s ease-out;
             transform-style: preserve-3d;
         }
@@ -344,6 +368,9 @@
 </head>
 <body>
 
+    <!-- Arka plan resmi ve filtre katmanları -->
+    <div class="cyberpunk-bg"></div>
+    <div class="bg-overlay"></div>
     <!-- Yemeğe göre aydınlanacak parlama katmanı -->
     <div class="dynamic-glow" id="glow-layer"></div>
 
@@ -616,7 +643,7 @@
             snackResultEl.style.textShadow = `0 0 20px ${glowColor}`;
 
             attachCursorHoverEvents();
-            fireConfetti(glowColor); // Konfetiler bile o renkte patlayacak!
+            fireConfetti(glowColor); 
         }
 
         function fireConfetti(accentColor) {
