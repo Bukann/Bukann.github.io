@@ -103,6 +103,7 @@
             font-weight: 400;
         }
 
+        /* Cam Panel (Glassmorphism) Efekti */
         #quiz-container, #result-container {
             background: rgba(26, 29, 36, 0.5);
             backdrop-filter: blur(16px);
@@ -112,6 +113,8 @@
             padding: 35px 25px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05);
             width: 100%;
+            position: relative;
+            overflow: hidden;
         }
 
         .question-title {
@@ -152,6 +155,7 @@
             box-shadow: 0 10px 20px -10px var(--accent-glow);
         }
 
+        /* Tıklama (İçe çökme) Animasyonu */
         button.clicked-effect {
             transform: scale(0.96) translateY(0) !important;
             background-color: rgba(139, 92, 246, 0.2) !important;
@@ -216,6 +220,41 @@
             box-shadow: 0 0 15px var(--accent-glow);
         }
 
+        /* Soru Kayma (Slide) Animasyonları */
+        .slide-out-left {
+            animation: slideOutLeft 0.25s forwards cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .slide-in-right {
+            animation: slideInRight 0.25s forwards cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideOutLeft {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(-40px); opacity: 0; }
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(40px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Neon Partikül (Confetti) Efekti */
+        .particle {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 100;
+            animation: popParticle 1s ease-out forwards;
+        }
+
+        @keyframes popParticle {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+
         @keyframes fadeInScale {
             from { opacity: 0; transform: translateY(20px) scale(0.95); }
             to { opacity: 1; transform: translateY(0) scale(1); }
@@ -239,9 +278,12 @@
                 <div class="progress-fill" id="progress"></div>
             </div>
 
-            <div id="question-text" class="question-title">Loading...</div>
-            <div id="options-container" class="options-grid">
-                <!-- Buttons will be injected here via JS -->
+            <!-- Soruların ve butonların kayacağı alan -->
+            <div id="quiz-content">
+                <div id="question-text" class="question-title">Loading...</div>
+                <div id="options-container" class="options-grid">
+                    <!-- Buttons will be injected here via JS -->
+                </div>
             </div>
         </div>
 
@@ -317,6 +359,7 @@
         const questionTextEl = document.getElementById('question-text');
         const optionsContainerEl = document.getElementById('options-container');
         const quizContainerEl = document.getElementById('quiz-container');
+        const quizContentEl = document.getElementById('quiz-content'); // Animasyon için wrapper
         const resultContainerEl = document.getElementById('result-container');
         const snackResultEl = document.getElementById('snack-result');
         const progressEl = document.getElementById('progress');
@@ -326,6 +369,10 @@
             userAnswers = {};
             quizContainerEl.classList.remove('hidden');
             resultContainerEl.classList.add('hidden');
+            
+            // Animasyon sınıflarını temizle
+            quizContentEl.classList.remove('slide-out-left', 'slide-in-right');
+            
             renderQuestion();
         }
 
@@ -342,13 +389,13 @@
                 const btn = document.createElement('button');
                 btn.textContent = option.label;
                 btn.onclick = (e) => {
-                    // Animasyonu tetiklemek için class ekle
+                    // Butonun içe çökme animasyonunu tetikle
                     btn.classList.add('clicked-effect');
                     
-                    // Butonun içe çökme animasyonu izlendikten sonra (200ms) diğer soruya geç
+                    // 150ms sonra yeni soruya geçiş işlemini başlat
                     setTimeout(() => {
                         handleAnswer(q.id, option.value);
-                    }, 200);
+                    }, 150);
                 };
                 optionsContainerEl.appendChild(btn);
             });
@@ -357,11 +404,23 @@
         function handleAnswer(questionId, answerValue) {
             userAnswers[questionId] = answerValue;
             currentQuestionIndex++;
-            if (currentQuestionIndex < questions.length) {
-                renderQuestion();
-            } else {
-                showResult();
-            }
+            
+            // İçeriği sola kaydırarak gizle
+            quizContentEl.classList.add('slide-out-left');
+            quizContentEl.classList.remove('slide-in-right');
+
+            // Kayma animasyonu bittikten sonra (250ms) yeni soruyu yükle
+            setTimeout(() => {
+                if (currentQuestionIndex < questions.length) {
+                    renderQuestion();
+                    
+                    // Yeni soruyu sağdan kaydırarak getir
+                    quizContentEl.classList.remove('slide-out-left');
+                    quizContentEl.classList.add('slide-in-right');
+                } else {
+                    showResult();
+                }
+            }, 250);
         }
 
         function showResult() {
@@ -387,6 +446,35 @@
             quizContainerEl.classList.add('hidden');
             snackResultEl.textContent = bestSnack.name;
             resultContainerEl.classList.remove('hidden');
+            
+            // Sonuç ekranında neon partikülleri patlat!
+            fireConfetti();
+        }
+
+        function fireConfetti() {
+            const colors = ['#8b5cf6', '#3b82f6', '#a855f7', '#60a5fa', '#ffffff'];
+            // 50 adet partikül oluştur
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Rastgele yön ve mesafe hesapla
+                const tx = (Math.random() - 0.5) * 600 + 'px';
+                const ty = (Math.random() - 0.5) * 600 + 'px';
+                particle.style.setProperty('--tx', tx);
+                particle.style.setProperty('--ty', ty);
+                
+                // Rastgele renk ve parlama
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.boxShadow = `0 0 12px ${particle.style.backgroundColor}`;
+
+                document.body.appendChild(particle);
+
+                // 1 saniye sonra partikülü DOM'dan temizle
+                setTimeout(() => {
+                    particle.remove();
+                }, 1000);
+            }
         }
 
         function startOver(event) {
