@@ -28,13 +28,21 @@
         }
 
         body {
-            background: radial-gradient(circle at 50% 0%, #171926 0%, var(--bg-color) 70%);
+            background: radial-gradient(circle at 50% 0%, #1e2136 0%, var(--bg-color) 70%);
+            background-size: 100% 150%;
+            animation: breatheBackground 8s ease-in-out infinite alternate;
             color: var(--text-main);
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
             padding: 10vh 20px 40px 20px;
+            overflow-x: hidden;
+        }
+
+        @keyframes breatheBackground {
+            0% { background-position: 50% 0%; }
+            100% { background-position: 50% 25%; }
         }
 
         #app-container {
@@ -91,7 +99,7 @@
             font-weight: 600;
             border-radius: 16px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             width: 100%;
             position: relative;
             overflow: hidden;
@@ -105,8 +113,12 @@
             box-shadow: 0 10px 20px -10px var(--accent-glow);
         }
 
-        button:active {
-            transform: translateY(0);
+        button.clicked-effect {
+            transform: scale(0.95) translateY(0) !important;
+            background-color: rgba(139, 92, 246, 0.15) !important;
+            border-color: var(--accent-color) !important;
+            box-shadow: inset 0 0 20px var(--accent-glow), 0 0 15px var(--accent-glow) !important;
+            transition: all 0.15s ease-out !important;
         }
 
         button.primary {
@@ -120,6 +132,10 @@
             box-shadow: 0 8px 25px var(--accent-glow);
         }
 
+        button.primary.clicked-effect {
+            transform: scale(0.92) !important;
+        }
+
         #result-container {
             display: flex;
             flex-direction: column;
@@ -129,17 +145,17 @@
         }
 
         .result-snack {
-            font-size: 2.25rem;
+            font-size: 2rem;
             font-weight: 800;
             color: #fff;
             margin: 24px 0;
             padding: 30px 20px;
             width: 100%;
-            background: rgba(139, 92, 246, 0.05);
+            background: rgba(139, 92, 246, 0.08);
             border-radius: 20px;
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            box-shadow: inset 0 0 20px rgba(139, 92, 246, 0.05), 0 10px 30px -10px var(--accent-glow);
-            text-shadow: 0 0 15px var(--accent-glow);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            box-shadow: inset 0 0 30px rgba(139, 92, 246, 0.1), 0 10px 40px -10px var(--accent-glow);
+            text-shadow: 0 0 20px var(--accent-glow);
         }
 
         .progress-bar {
@@ -191,7 +207,7 @@
         <div id="result-container" class="hidden">
             <p class="subtitle">Your optimal snack is:</p>
             <div id="snack-result" class="result-snack">...</div>
-            <button class="primary" onclick="startOver()">Find Another Snack</button>
+            <button class="primary" id="restart-btn" onclick="startOver(event)">Find Another Snack</button>
         </div>
     </div>
 
@@ -242,46 +258,16 @@
         ];
 
         const snacks = [
-            {
-                name: "🌯 Chicken Wrap",
-                tags: { oneHand: "yes", hunger: "medium", greasy: "no", gameType: "competitive", budget: "medium" }
-            },
-            {
-                name: "🍔 Burger Menu",
-                tags: { oneHand: "no", hunger: "high", greasy: "yes", gameType: "casual", budget: "high" }
-            },
-            {
-                name: "🍕 Pizza Slice",
-                tags: { oneHand: "yes", hunger: "medium", greasy: "yes", gameType: "casual", budget: "low" }
-            },
-            {
-                name: "🍜 Noodles",
-                tags: { oneHand: "no", hunger: "high", greasy: "no", gameType: "casual", budget: "medium" }
-            },
-            {
-                name: "🥪 Toast Sandwich",
-                tags: { oneHand: "yes", hunger: "medium", greasy: "no", gameType: "casual", budget: "low" }
-            },
-            {
-                name: "🍫 Granola Bar",
-                tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "low" }
-            },
-            {
-                name: "🥨 Crackers",
-                tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "low" }
-            },
-            {
-                name: "🍎 Fruit Bowl",
-                tags: { oneHand: "no", hunger: "low", greasy: "no", gameType: "casual", budget: "medium" }
-            },
-            {
-                name: "🥡 Instant Ramen",
-                tags: { oneHand: "no", hunger: "medium", greasy: "no", gameType: "casual", budget: "low" }
-            },
-            {
-                name: "💪 Protein Bar",
-                tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "medium" }
-            }
+            { name: "🌯 Chicken Wrap", tags: { oneHand: "yes", hunger: "medium", greasy: "no", gameType: "competitive", budget: "medium" } },
+            { name: "🍔 Burger Menu", tags: { oneHand: "no", hunger: "high", greasy: "yes", gameType: "casual", budget: "high" } },
+            { name: "🍕 Pizza Slice", tags: { oneHand: "yes", hunger: "medium", greasy: "yes", gameType: "casual", budget: "low" } },
+            { name: "🍜 Noodles", tags: { oneHand: "no", hunger: "high", greasy: "no", gameType: "casual", budget: "medium" } },
+            { name: "🥪 Toast Sandwich", tags: { oneHand: "yes", hunger: "medium", greasy: "no", gameType: "casual", budget: "low" } },
+            { name: "🍫 Granola Bar", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "low" } },
+            { name: "🥨 Crackers", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "low" } },
+            { name: "🍎 Fruit Bowl", tags: { oneHand: "no", hunger: "low", greasy: "no", gameType: "casual", budget: "medium" } },
+            { name: "🥡 Instant Ramen", tags: { oneHand: "no", hunger: "medium", greasy: "no", gameType: "casual", budget: "low" } },
+            { name: "💪 Protein Bar", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "medium" } }
         ];
 
         let currentQuestionIndex = 0;
@@ -314,7 +300,15 @@
             q.options.forEach(option => {
                 const btn = document.createElement('button');
                 btn.textContent = option.label;
-                btn.onclick = () => handleAnswer(q.id, option.value);
+                btn.onclick = (e) => {
+                    // Animasyonu tetiklemek için class ekle
+                    btn.classList.add('clicked-effect');
+                    
+                    // Butonun içe çökme animasyonu izlendikten sonra (200ms) diğer soruya geç
+                    setTimeout(() => {
+                        handleAnswer(q.id, option.value);
+                    }, 200);
+                };
                 optionsContainerEl.appendChild(btn);
             });
         }
@@ -354,8 +348,17 @@
             resultContainerEl.classList.remove('hidden');
         }
 
-        function startOver() {
-            initApp();
+        function startOver(event) {
+            if(event) {
+                const btn = event.target;
+                btn.classList.add('clicked-effect');
+                setTimeout(() => {
+                    btn.classList.remove('clicked-effect');
+                    initApp();
+                }, 200);
+            } else {
+                initApp();
+            }
         }
 
         function setDynamicTitle() {
