@@ -40,19 +40,15 @@
             position: relative;
         }
 
-        /* --- GERÇEK SİBERPUNK ŞEHİR ARKA PLANI (TOKYO NEON) --- */
         .cyberpunk-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-image: url('https://images.unsplash.com/photo-1601042879364-f3947d3f9c16?q=80&w=2070&auto=format&fit=crop'); 
+            background-image: url('https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=2070&auto=format&fit=crop'); 
             background-size: cover;
             background-position: center;
-            /* Arayüz net kalsın diye sinematik bulanıklık */
-            filter: blur(4px);
-            transform: scale(1.05); 
             z-index: -5;
         }
 
@@ -62,8 +58,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            /* Cam panelin öne çıkması için karanlık filtre */
-            background: rgba(10, 10, 15, 0.75); 
+            background: rgba(10, 10, 15, 0.65); 
             z-index: -4;
         }
 
@@ -127,6 +122,7 @@
             transform: translateZ(30px);
         }
 
+        /* --- YENİ: Başlık Glitch (Hata) Efekti --- */
         h1 {
             font-size: 2rem;
             font-weight: 800;
@@ -136,6 +132,17 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+            animation: glitch-anim 4s infinite;
+        }
+
+        @keyframes glitch-anim {
+            0%, 94% { transform: translate(0, 0); text-shadow: 0 0 30px rgba(168, 85, 247, 0.3); }
+            95% { transform: translate(-2px, 1px); text-shadow: -3px 0 #ff003c, 3px 0 #00e5ff; }
+            96% { transform: translate(2px, -1px); text-shadow: 3px 0 #ff003c, -3px 0 #00e5ff; }
+            97% { transform: translate(0, 0); text-shadow: 0 0 30px rgba(168, 85, 247, 0.3); }
+            98% { transform: translate(-1px, 2px); text-shadow: -3px 0 #ff003c, 3px 0 #00e5ff; }
+            99% { transform: translate(1px, -2px); text-shadow: 3px 0 #ff003c, -3px 0 #00e5ff; }
+            100% { transform: translate(0, 0); text-shadow: 0 0 30px rgba(168, 85, 247, 0.3); }
         }
 
         p.subtitle {
@@ -146,13 +153,13 @@
         }
 
         .glass-panel {
-            background: rgba(26, 29, 36, 0.5); 
+            background: rgba(26, 29, 36, 0.65); 
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 24px;
             padding: 35px 25px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255,255,255,0.05);
             width: 100%;
             position: relative;
             transition: transform 0.2s ease-out;
@@ -163,6 +170,7 @@
             transform: translateZ(20px);
         }
 
+        /* --- YENİ: Daktilo İmleci Stili --- */
         .question-title {
             font-size: 1.25rem;
             font-weight: 600;
@@ -171,12 +179,30 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+        }
+
+        .typing-cursor::after {
+            content: '█';
+            color: var(--accent-color);
+            animation: blink 1s step-end infinite;
+            margin-left: 5px;
+            font-size: 1.1rem;
+            vertical-align: bottom;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
 
         .options-grid {
             display: flex;
             flex-direction: column;
             gap: 14px;
+            /* Daktilo bitene kadar görünmez */
+            opacity: 0; 
+            transition: opacity 0.4s ease-in-out;
         }
 
         button {
@@ -214,6 +240,8 @@
             margin-top: 24px;
             box-shadow: 0 4px 15px var(--accent-glow);
             color: white;
+            opacity: 0; /* Animasyonla gelecek */
+            transition: opacity 0.5s ease-in;
         }
 
         button.primary:hover {
@@ -236,7 +264,7 @@
             font-size: 2rem;
             font-weight: 800;
             color: #fff;
-            margin: 24px 0;
+            margin: 20px 0 10px 0;
             padding: 30px 20px;
             width: 100%;
             background: rgba(139, 92, 246, 0.1);
@@ -244,7 +272,34 @@
             border: 1px solid rgba(139, 92, 246, 0.4);
             box-shadow: inset 0 0 30px rgba(139, 92, 246, 0.15), 0 10px 40px -10px var(--accent-glow);
             text-shadow: 0 0 20px var(--accent-glow);
-            transition: all 0.5s ease;
+            transition: all 0.2s ease;
+        }
+
+        /* YENİ: Rulet Sırasında Bulanıklık */
+        .spinning {
+            filter: blur(2px);
+            transform: scale(1.05);
+            border-color: rgba(255, 255, 255, 0.2) !important;
+            box-shadow: none !important;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5) !important;
+        }
+
+        .suggestion-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            width: 100%;
+            font-size: 0.9rem;
+            color: #d1d5db;
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        .suggestion-box span {
+            font-weight: 600;
+            color: #fff;
         }
 
         .progress-bar {
@@ -360,7 +415,6 @@
 
     <div class="cyberpunk-bg"></div>
     <div class="bg-overlay"></div>
-
     <div class="dynamic-glow" id="glow-layer"></div>
     <div id="custom-cursor"></div>
 
@@ -376,16 +430,20 @@
             </div>
 
             <div id="quiz-content">
-                <div id="question-text" class="question-title">Loading...</div>
-                <div id="options-container" class="options-grid">
-                </div>
+                <div id="question-text" class="question-title"></div>
+                <div id="options-container" class="options-grid"></div>
             </div>
         </div>
 
         <div id="result-container" class="glass-panel hidden">
-            <p class="subtitle">Your optimal snack is:</p>
+            <p class="subtitle" id="result-subtitle">Calculating optimal snack...</p>
             <div id="snack-result" class="result-snack">...</div>
-            <button class="primary hoverable" id="restart-btn" onclick="startOver(event)">Find Another Snack</button>
+            
+            <div id="snack-suggestion" class="suggestion-box hidden">
+                💡 Recommended spot: <span id="place-name">...</span>
+            </div>
+
+            <button class="primary hoverable hidden" id="restart-btn" onclick="startOver(event)">Find Another Snack</button>
         </div>
     </div>
 
@@ -436,17 +494,16 @@
         ];
 
         const snacks = [
-            { name: "🌯 Chicken Wrap", tags: { oneHand: "yes", hunger: "medium", greasy: "no", gameType: "competitive", budget: "medium" } },
-            { name: "🍔 Burger Menu", tags: { oneHand: "no", hunger: "high", greasy: "yes", gameType: "casual", budget: "high" } },
-            { name: "🍕 Pizza Slice", tags: { oneHand: "yes", hunger: "medium", greasy: "yes", gameType: "casual", budget: "low" } },
-            { name: "🍜 Noodles", tags: { oneHand: "no", hunger: "high", greasy: "no", gameType: "casual", budget: "medium" } },
-            { name: "🥪 Toast Sandwich", tags: { oneHand: "yes", hunger: "medium", greasy: "no", gameType: "casual", budget: "low" } },
-            { name: "🍫 Granola Bar", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "low" } },
-            // KRAKER İÇİN DÜZELTME YAPILDI: gameType artık "casual"
-            { name: "🥨 Crackers", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "casual", budget: "low" } },
-            { name: "🍎 Fruit Bowl", tags: { oneHand: "no", hunger: "low", greasy: "no", gameType: "casual", budget: "medium" } },
-            { name: "🥡 Instant Ramen", tags: { oneHand: "no", hunger: "medium", greasy: "no", gameType: "casual", budget: "low" } },
-            { name: "💪 Protein Bar", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "medium" } }
+            { name: "🌯 Chicken Wrap", place: "Dürümcü Kardeşler (Alsancak) or GetirYemek", tags: { oneHand: "yes", hunger: "medium", greasy: "no", gameType: "competitive", budget: "medium" } },
+            { name: "🍔 Burger Menu", place: "Burger King or Local Smash Burger Spot", tags: { oneHand: "no", hunger: "high", greasy: "yes", gameType: "casual", budget: "high" } },
+            { name: "🍕 Pizza Slice", place: "Pizza Locale or Dominos", tags: { oneHand: "yes", hunger: "medium", greasy: "yes", gameType: "casual", budget: "low" } },
+            { name: "🍜 Noodles", place: "Wok to Walk (Alsancak) or Noodle House", tags: { oneHand: "no", hunger: "high", greasy: "no", gameType: "casual", budget: "medium" } },
+            { name: "🥪 Toast Sandwich", place: "Kardeşler Büfe or Local Kumrucu", tags: { oneHand: "yes", hunger: "medium", greasy: "no", gameType: "casual", budget: "low" } },
+            { name: "🍫 Granola Bar", place: "Migros Jet or Nearest Corner Store", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "low" } },
+            { name: "🥨 Crackers", place: "Your own pantry or Local Market", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "casual", budget: "low" } },
+            { name: "🍎 Fruit Bowl", place: "Kitchen Fridge", tags: { oneHand: "no", hunger: "low", greasy: "no", gameType: "casual", budget: "medium" } },
+            { name: "🥡 Instant Ramen", place: "Boil water, check your cabinets!", tags: { oneHand: "no", hunger: "medium", greasy: "no", gameType: "casual", budget: "low" } },
+            { name: "💪 Protein Bar", place: "Macrocenter or Supplement Store", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "medium" } }
         ];
 
         const colorMap = {
@@ -464,6 +521,7 @@
 
         let currentQuestionIndex = 0;
         let userAnswers = {};
+        let typingTimeoutId = null;
 
         const questionTextEl = document.getElementById('question-text');
         const optionsContainerEl = document.getElementById('options-container');
@@ -471,6 +529,10 @@
         const quizContentEl = document.getElementById('quiz-content');
         const resultContainerEl = document.getElementById('result-container');
         const snackResultEl = document.getElementById('snack-result');
+        const resultSubtitleEl = document.getElementById('result-subtitle');
+        const suggestionBoxEl = document.getElementById('snack-suggestion');
+        const placeNameEl = document.getElementById('place-name');
+        const restartBtn = document.getElementById('restart-btn');
         const progressEl = document.getElementById('progress');
         const customCursor = document.getElementById('custom-cursor');
         const glowLayer = document.getElementById('glow-layer');
@@ -481,23 +543,18 @@
         document.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
-            
             customCursor.style.left = mouseX + 'px';
             customCursor.style.top = mouseY + 'px';
         });
 
         document.addEventListener('click', (e) => {
             if (e.clientX === 0 && e.clientY === 0) return;
-
             const ripple = document.createElement('div');
             ripple.classList.add('cursor-ripple');
             ripple.style.left = e.clientX + 'px';
             ripple.style.top = e.clientY + 'px';
             document.body.appendChild(ripple);
-            
-            setTimeout(() => {
-                ripple.remove();
-            }, 400);
+            setTimeout(() => ripple.remove(), 400);
         });
 
         function attachCursorHoverEvents() {
@@ -512,32 +569,52 @@
         panels.forEach(panel => {
             panel.addEventListener('mousemove', (e) => {
                 if(window.innerWidth < 768) return; 
-
                 const rect = panel.getBoundingClientRect();
                 const x = e.clientX - rect.left; 
                 const y = e.clientY - rect.top;  
-                
                 const centerX = rect.width / 2;
                 const centerY = rect.height / 2;
-                
                 const rotateX = ((y - centerY) / centerY) * -10; 
                 const rotateY = ((x - centerX) / centerX) * 10;
-                
                 panel.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
             });
-            
             panel.addEventListener('mouseleave', () => {
                 panel.style.transform = 'rotateX(0deg) rotateY(0deg)';
             });
         });
 
+        function typeWriterEffect(text, callback) {
+            clearTimeout(typingTimeoutId);
+            questionTextEl.innerHTML = '';
+            questionTextEl.classList.add('typing-cursor');
+            
+            let i = 0;
+            function type() {
+                if (i < text.length) {
+                    questionTextEl.innerHTML += text.charAt(i);
+                    i++;
+                    // Daktilo hızı (40ms çok idealdir)
+                    typingTimeoutId = setTimeout(type, 30);
+                } else {
+                    questionTextEl.classList.remove('typing-cursor');
+                    if(callback) callback();
+                }
+            }
+            type();
+        }
+
         function initApp() {
             currentQuestionIndex = 0;
             userAnswers = {};
+            
             quizContainerEl.classList.remove('hidden');
             resultContainerEl.classList.add('hidden');
+            suggestionBoxEl.classList.add('hidden'); 
+            suggestionBoxEl.style.opacity = '0';
+            restartBtn.classList.add('hidden');
+            restartBtn.style.opacity = '0';
+
             quizContainerEl.style.transform = 'none'; 
-            
             quizContentEl.classList.remove('slide-out-left', 'slide-in-right');
             
             glowLayer.style.background = 'radial-gradient(circle, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 100%)';
@@ -550,34 +627,34 @@
 
         function renderQuestion() {
             const q = questions[currentQuestionIndex];
-            
             const progressPercentage = (currentQuestionIndex / questions.length) * 100;
             progressEl.style.width = `${progressPercentage}%`;
 
-            questionTextEl.textContent = q.text;
+            optionsContainerEl.style.opacity = '0';
             optionsContainerEl.innerHTML = '';
 
+            // Seçenekleri hazırla ama daktilo bitene kadar gizle
             q.options.forEach(option => {
                 const btn = document.createElement('button');
                 btn.textContent = option.label;
                 btn.classList.add('hoverable'); 
                 btn.onclick = (e) => {
                     btn.classList.add('clicked-effect');
-                    
-                    setTimeout(() => {
-                        handleAnswer(q.id, option.value);
-                    }, 150);
+                    setTimeout(() => handleAnswer(q.id, option.value), 150);
                 };
                 optionsContainerEl.appendChild(btn);
             });
             
-            attachCursorHoverEvents();
+            // Daktilo efekti ile soruyu yaz, bitince butonları göster
+            typeWriterEffect(q.text, () => {
+                optionsContainerEl.style.opacity = '1';
+                attachCursorHoverEvents();
+            });
         }
 
         function handleAnswer(questionId, answerValue) {
             userAnswers[questionId] = answerValue;
             currentQuestionIndex++;
-            
             quizContentEl.classList.add('slide-out-left');
             quizContentEl.classList.remove('slide-in-right');
 
@@ -595,17 +672,14 @@
         function showResult() {
             progressEl.style.width = '100%';
 
+            // Kazananı hesapla
             let bestSnack = snacks[0];
             let maxScore = -1;
-
             snacks.forEach(snack => {
                 let score = 0;
                 for (const [key, val] of Object.entries(userAnswers)) {
-                    if (snack.tags[key] === val) {
-                        score++;
-                    }
+                    if (snack.tags[key] === val) score++;
                 }
-
                 if (score > maxScore) {
                     maxScore = score;
                     bestSnack = snack;
@@ -613,17 +687,53 @@
             });
 
             quizContainerEl.classList.add('hidden');
-            snackResultEl.textContent = bestSnack.name;
             resultContainerEl.classList.remove('hidden');
             resultContainerEl.style.transform = 'none'; 
             
+            // RULET (SLOT) EFEKTİ BAŞLIYOR
+            resultSubtitleEl.textContent = "Hacking database...";
+            snackResultEl.classList.add('spinning');
+            
+            let spins = 0;
+            const maxSpins = 25; // Ekranda 25 kez rastgele yemek dönecek
+            const spinInterval = 80; // Hız (milisaniye)
+
+            const roulette = setInterval(() => {
+                const randomSnack = snacks[Math.floor(Math.random() * snacks.length)];
+                snackResultEl.textContent = randomSnack.name;
+                spins++;
+
+                if (spins >= maxSpins) {
+                    clearInterval(roulette);
+                    revealFinal(bestSnack);
+                }
+            }, spinInterval);
+        }
+
+        function revealFinal(bestSnack) {
+            // Rulet efektini temizle
+            snackResultEl.classList.remove('spinning');
+            resultSubtitleEl.textContent = "Your optimal snack is:";
+            
+            // Gerçek sonucu yaz
+            snackResultEl.textContent = bestSnack.name;
+            if(bestSnack.place) {
+                placeNameEl.textContent = bestSnack.place;
+                suggestionBoxEl.classList.remove('hidden');
+                setTimeout(() => suggestionBoxEl.style.opacity = '1', 100);
+            }
+
+            // Yeniden başla butonunu getir
+            restartBtn.classList.remove('hidden');
+            setTimeout(() => restartBtn.style.opacity = '1', 300);
+            
+            // Parlama ve Renk efektleri
             const glowColor = colorMap[bestSnack.name] || '#8b5cf6';
-            
             glowLayer.style.background = `radial-gradient(circle, ${glowColor}44 0%, transparent 70%)`;
-            
             snackResultEl.style.borderColor = glowColor;
             snackResultEl.style.boxShadow = `inset 0 0 30px ${glowColor}33, 0 10px 40px -10px ${glowColor}88`;
             snackResultEl.style.textShadow = `0 0 20px ${glowColor}`;
+            suggestionBoxEl.style.borderColor = `rgba(${glowColor.replace('#', '')}, 0.5)`;
 
             attachCursorHoverEvents();
             fireConfetti(glowColor); 
@@ -644,10 +754,7 @@
                 particle.style.boxShadow = `0 0 12px ${particle.style.backgroundColor}`;
 
                 document.body.appendChild(particle);
-
-                setTimeout(() => {
-                    particle.remove();
-                }, 1000);
+                setTimeout(() => particle.remove(), 1000);
             }
         }
 
