@@ -25,7 +25,6 @@
             margin: 0;
             padding: 0;
             font-family: 'Inter', sans-serif;
-            /* Standart imleci tüm sitede gizle */
             cursor: none !important;
         }
 
@@ -41,7 +40,6 @@
             position: relative;
         }
 
-        /* --- SONUÇ EKRANI İÇİN DİNAMİK PARLAMA (GLOW) EFEKTİ --- */
         .dynamic-glow {
             position: fixed;
             top: 50%;
@@ -56,7 +54,6 @@
             mix-blend-mode: screen;
         }
 
-        /* Arka planda yüzen neon ışık hüzmeleri */
         body::before {
             content: '';
             position: fixed;
@@ -95,13 +92,11 @@
             max-width: 480px;
             text-align: center;
             z-index: 1;
-            /* Tilt efekti için perspektif */
             perspective: 1000px; 
         }
 
         .header-section {
             margin-bottom: 30px;
-            /* Tilt olurken başlığın da biraz havada kalması için */
             transform: translateZ(30px);
         }
 
@@ -123,7 +118,6 @@
             font-weight: 400;
         }
 
-        /* Cam Panel (Glassmorphism) + Tilt Efekti */
         .glass-panel {
             background: rgba(26, 29, 36, 0.5); 
             backdrop-filter: blur(16px);
@@ -134,12 +128,10 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05);
             width: 100%;
             position: relative;
-            /* Tilt efekti için geçişler */
             transition: transform 0.2s ease-out;
             transform-style: preserve-3d;
         }
 
-        /* Panelin içindeki öğelerin de 3D düzlemde havaya kalkması için */
         .glass-panel > * {
             transform: translateZ(20px);
         }
@@ -174,7 +166,6 @@
             overflow: hidden;
         }
 
-        /* Buton üzerine gelindiğinde */
         button:hover {
             background-color: rgba(139, 92, 246, 0.1);
             border-color: rgba(139, 92, 246, 0.5);
@@ -182,7 +173,6 @@
             box-shadow: 0 10px 20px -10px var(--accent-glow);
         }
 
-        /* Tıklama (İçe çökme) Animasyonu */
         button.clicked-effect {
             transform: scale(0.96) translateY(0) !important;
             background-color: rgba(139, 92, 246, 0.2) !important;
@@ -248,7 +238,6 @@
             box-shadow: 0 0 15px var(--accent-glow);
         }
 
-        /* Soru Kayma (Slide) Animasyonları */
         .slide-out-left {
             animation: slideOutLeft 0.25s forwards cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -265,7 +254,6 @@
             to { transform: translateX(0) translateZ(20px); opacity: 1; }
         }
 
-        /* Neon Partikül (Confetti) Efekti */
         .particle {
             position: fixed;
             top: 50%;
@@ -292,7 +280,6 @@
             display: none !important;
         }
 
-        /* --- ÖZEL NEON İMLEÇ TASARIMI --- */
         #custom-cursor {
             position: fixed;
             top: 0;
@@ -344,15 +331,11 @@
 </head>
 <body>
 
-    <!-- Yemeğe göre aydınlanacak parlama katmanı -->
     <div class="dynamic-glow" id="glow-layer"></div>
-
-    <!-- Özel İmleç Elementi -->
     <div id="custom-cursor"></div>
 
     <div id="app-container">
         <div class="header-section">
-            <!-- BAŞLIK SABİTLENDİ -->
             <h1 id="main-title">Izmir - Late-Night Snack</h1>
             <p class="subtitle" id="main-subtitle">Let's find the perfect choice for you.</p>
         </div>
@@ -429,13 +412,13 @@
             { name: "🍜 Noodles", tags: { oneHand: "no", hunger: "high", greasy: "no", gameType: "casual", budget: "medium" } },
             { name: "🥪 Toast Sandwich", tags: { oneHand: "yes", hunger: "medium", greasy: "no", gameType: "casual", budget: "low" } },
             { name: "🍫 Granola Bar", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "low" } },
-            { name: "🥨 Crackers", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "low" } },
+            // KRAKER İÇİN DÜZELTME YAPILDI: gameType artık "casual"
+            { name: "🥨 Crackers", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "casual", budget: "low" } },
             { name: "🍎 Fruit Bowl", tags: { oneHand: "no", hunger: "low", greasy: "no", gameType: "casual", budget: "medium" } },
             { name: "🥡 Instant Ramen", tags: { oneHand: "no", hunger: "medium", greasy: "no", gameType: "casual", budget: "low" } },
             { name: "💪 Protein Bar", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "medium" } }
         ];
 
-        // --- YEMEKLERE GÖRE PARLAYACAK RENKLER ---
         const colorMap = {
             "🌯 Chicken Wrap": "#f59e0b",
             "🍔 Burger Menu": "#ef4444",
@@ -527,7 +510,6 @@
             
             quizContentEl.classList.remove('slide-out-left', 'slide-in-right');
             
-            // Parlama Efektlerini Sıfırla
             glowLayer.style.background = 'radial-gradient(circle, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 100%)';
             snackResultEl.style.borderColor = 'rgba(139, 92, 246, 0.4)';
             snackResultEl.style.boxShadow = 'inset 0 0 30px rgba(139, 92, 246, 0.15), 0 10px 40px -10px var(--accent-glow)';
@@ -605,13 +587,10 @@
             resultContainerEl.classList.remove('hidden');
             resultContainerEl.style.transform = 'none'; 
             
-            // --- PARLAMA EFEKTİNİ TETİKLE ---
             const glowColor = colorMap[bestSnack.name] || '#8b5cf6';
             
-            // Arka planda kocaman bir renk hüzmesi
             glowLayer.style.background = `radial-gradient(circle, ${glowColor}44 0%, transparent 70%)`;
             
-            // Cam kutunun ve yazının rengi
             snackResultEl.style.borderColor = glowColor;
             snackResultEl.style.boxShadow = `inset 0 0 30px ${glowColor}33, 0 10px 40px -10px ${glowColor}88`;
             snackResultEl.style.textShadow = `0 0 20px ${glowColor}`;
@@ -655,7 +634,6 @@
             }
         }
 
-        // Dinamik saat kontrolünü kaldırdık, sadece initApp çalışıyor
         window.onload = () => {
             initApp();
         };
