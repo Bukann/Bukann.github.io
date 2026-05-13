@@ -25,6 +25,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Inter', sans-serif;
+            /* Standart imleci tüm sitede gizle */
             cursor: none !important;
         }
 
@@ -40,29 +41,7 @@
             position: relative;
         }
 
-        /* --- İNTERNETTEN ÇALIŞAN NEON SOKAK ARKA PLANI --- */
-        .cyberpunk-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-image: url('https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=2070&auto=format&fit=crop'); 
-            background-size: cover;
-            background-position: center;
-            z-index: -5;
-        }
-
-        .bg-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 10, 15, 0.65); 
-            z-index: -4;
-        }
-
+        /* --- SONUÇ EKRANI İÇİN DİNAMİK PARLAMA (GLOW) EFEKTİ --- */
         .dynamic-glow {
             position: fixed;
             top: 50%;
@@ -77,6 +56,7 @@
             mix-blend-mode: screen;
         }
 
+        /* Arka planda yüzen neon ışık hüzmeleri */
         body::before {
             content: '';
             position: fixed;
@@ -115,11 +95,13 @@
             max-width: 480px;
             text-align: center;
             z-index: 1;
+            /* Tilt efekti için perspektif */
             perspective: 1000px; 
         }
 
         .header-section {
             margin-bottom: 30px;
+            /* Tilt olurken başlığın da biraz havada kalması için */
             transform: translateZ(30px);
         }
 
@@ -141,20 +123,23 @@
             font-weight: 400;
         }
 
+        /* Cam Panel (Glassmorphism) + Tilt Efekti */
         .glass-panel {
-            background: rgba(26, 29, 36, 0.65); 
+            background: rgba(26, 29, 36, 0.5); 
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 24px;
             padding: 35px 25px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255,255,255,0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05);
             width: 100%;
             position: relative;
+            /* Tilt efekti için geçişler */
             transition: transform 0.2s ease-out;
             transform-style: preserve-3d;
         }
 
+        /* Panelin içindeki öğelerin de 3D düzlemde havaya kalkması için */
         .glass-panel > * {
             transform: translateZ(20px);
         }
@@ -189,6 +174,7 @@
             overflow: hidden;
         }
 
+        /* Buton üzerine gelindiğinde */
         button:hover {
             background-color: rgba(139, 92, 246, 0.1);
             border-color: rgba(139, 92, 246, 0.5);
@@ -196,6 +182,7 @@
             box-shadow: 0 10px 20px -10px var(--accent-glow);
         }
 
+        /* Tıklama (İçe çökme) Animasyonu */
         button.clicked-effect {
             transform: scale(0.96) translateY(0) !important;
             background-color: rgba(139, 92, 246, 0.2) !important;
@@ -261,6 +248,7 @@
             box-shadow: 0 0 15px var(--accent-glow);
         }
 
+        /* Soru Kayma (Slide) Animasyonları */
         .slide-out-left {
             animation: slideOutLeft 0.25s forwards cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -277,6 +265,7 @@
             to { transform: translateX(0) translateZ(20px); opacity: 1; }
         }
 
+        /* Neon Partikül (Confetti) Efekti */
         .particle {
             position: fixed;
             top: 50%;
@@ -303,6 +292,7 @@
             display: none !important;
         }
 
+        /* --- ÖZEL NEON İMLEÇ TASARIMI --- */
         #custom-cursor {
             position: fixed;
             top: 0;
@@ -354,14 +344,16 @@
 </head>
 <body>
 
-    <div class="cyberpunk-bg"></div>
-    <div class="bg-overlay"></div>
+    <!-- Yemeğe göre aydınlanacak parlama katmanı -->
     <div class="dynamic-glow" id="glow-layer"></div>
+
+    <!-- Özel İmleç Elementi -->
     <div id="custom-cursor"></div>
 
     <div id="app-container">
         <div class="header-section">
-            <h1 id="main-title">Izmir - Snack</h1>
+            <!-- BAŞLIK SABİTLENDİ -->
+            <h1 id="main-title">Izmir - Late-Night Snack</h1>
             <p class="subtitle" id="main-subtitle">Let's find the perfect choice for you.</p>
         </div>
 
@@ -443,6 +435,7 @@
             { name: "💪 Protein Bar", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "medium" } }
         ];
 
+        // --- YEMEKLERE GÖRE PARLAYACAK RENKLER ---
         const colorMap = {
             "🌯 Chicken Wrap": "#f59e0b",
             "🍔 Burger Menu": "#ef4444",
@@ -534,6 +527,7 @@
             
             quizContentEl.classList.remove('slide-out-left', 'slide-in-right');
             
+            // Parlama Efektlerini Sıfırla
             glowLayer.style.background = 'radial-gradient(circle, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 100%)';
             snackResultEl.style.borderColor = 'rgba(139, 92, 246, 0.4)';
             snackResultEl.style.boxShadow = 'inset 0 0 30px rgba(139, 92, 246, 0.15), 0 10px 40px -10px var(--accent-glow)';
@@ -611,10 +605,13 @@
             resultContainerEl.classList.remove('hidden');
             resultContainerEl.style.transform = 'none'; 
             
+            // --- PARLAMA EFEKTİNİ TETİKLE ---
             const glowColor = colorMap[bestSnack.name] || '#8b5cf6';
             
+            // Arka planda kocaman bir renk hüzmesi
             glowLayer.style.background = `radial-gradient(circle, ${glowColor}44 0%, transparent 70%)`;
             
+            // Cam kutunun ve yazının rengi
             snackResultEl.style.borderColor = glowColor;
             snackResultEl.style.boxShadow = `inset 0 0 30px ${glowColor}33, 0 10px 40px -10px ${glowColor}88`;
             snackResultEl.style.textShadow = `0 0 20px ${glowColor}`;
@@ -658,20 +655,8 @@
             }
         }
 
-        function setDynamicTitle() {
-            const titleEl = document.getElementById('main-title');
-            
-            const hour = new Date().getHours();
-            let timeContext = "Late-Night";
-            if (hour >= 6 && hour < 12) timeContext = "Morning";
-            else if (hour >= 12 && hour < 18) timeContext = "Afternoon";
-            else if (hour >= 18 && hour < 23) timeContext = "Evening";
-
-            titleEl.textContent = `Izmir - ${timeContext} Snack`;
-        }
-
+        // Dinamik saat kontrolünü kaldırdık, sadece initApp çalışıyor
         window.onload = () => {
-            setDynamicTitle();
             initApp();
         };
     </script>
