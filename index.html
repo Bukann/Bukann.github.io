@@ -1,271 +1,782 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Midnight Glow - Cyberpunk City Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>Late-Night Snack Recommender</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --accent-neon: #d946ef;
+            --bg-color: #090a0f; 
+            --surface-color: #1a1d24;
             --text-main: #f3f4f6;
-            --glass: rgba(15, 15, 20, 0.75);
-            --border-glow: rgba(217, 70, 239, 0.5);
+            --text-muted: #8b949e;
+            --accent-color: #8b5cf6; 
+            --accent-hover: #7c3aed;
+            --accent-glow: rgba(139, 92, 246, 0.4);
+            --border-color: rgba(255, 255, 255, 0.08);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            cursor: default;
+            font-family: 'Inter', sans-serif;
+            cursor: none !important;
         }
 
         body {
-            /* Gerçek Neon Siberpunk Sokak Görseli */
-            background: url('https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
-            background-size: cover;
+            background-color: var(--bg-color);
             color: var(--text-main);
-            font-family: 'JetBrains+Mono', monospace;
-            height: 100vh;
-            overflow: hidden;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            min-height: 100vh;
+            padding: 10vh 20px 40px 20px;
+            overflow-x: hidden;
+            position: relative;
         }
 
-        /* Arka planı biraz karartıp menüyü öne çıkaran filtre */
+        .cyberpunk-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            /* GERÇEK Neon Siberpunk Sokak Görseli */
+            background-image: url('https://images.unsplash.com/photo-1555680202-c86f0e12f086?q=80&w=2070&auto=format&fit=crop'); 
+            background-size: cover;
+            background-position: center;
+            z-index: -5;
+            /* Arka planın arayüzü yutmaması için sinematik bulanıklık */
+            filter: blur(4px) brightness(0.8);
+        }
+
         .bg-overlay {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(10, 5, 25, 0.6);
-            backdrop-filter: blur(6px);
-            z-index: -1;
+            background: rgba(10, 10, 15, 0.65); 
+            z-index: -4;
         }
 
-        /* --- GLITCH EFEKTİ --- */
-        .glitch-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 2.2rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            position: relative;
-            color: #fff;
-            text-shadow: 0.05em 0 0 #ff00ff, -0.05em -0.025em 0 #00ffff;
-            animation: glitch 3s infinite;
-            margin-bottom: 30px;
+        .dynamic-glow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 100%);
+            transition: background 1s ease;
+            z-index: -3;
+            pointer-events: none;
+            mix-blend-mode: screen;
         }
 
-        @keyframes glitch {
-            0% { text-shadow: 0.05em 0 0 #ff00ff, -0.05em -0.025em 0 #00ffff; }
-            14% { text-shadow: 0.05em 0 0 #ff00ff, -0.05em -0.025em 0 #00ffff; }
-            15% { text-shadow: -0.05em -0.025em 0 #ff00ff, 0.025em 0.035em 0 #00ffff; }
-            49% { text-shadow: -0.05em -0.025em 0 #ff00ff, 0.025em 0.035em 0 #00ffff; }
-            50% { text-shadow: 0.025em 0.05em 0 #ff00ff, 0.05em 0 0 #00ffff; }
-            99% { text-shadow: 0.025em 0.05em 0 #ff00ff, 0.05em 0 0 #00ffff; }
-            100% { text-shadow: -0.025em 0 0 #ff00ff, -0.025em -0.025em 0 #00ffff; }
+        body::before {
+            content: '';
+            position: fixed;
+            top: -20%;
+            left: -10%;
+            width: 70vw;
+            height: 70vw;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 60%);
+            border-radius: 50%;
+            z-index: -2;
+            animation: floatGlow 15s ease-in-out infinite alternate;
+            pointer-events: none;
         }
 
-        /* --- ANA PANEL --- */
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -20%;
+            right: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 60%);
+            border-radius: 50%;
+            z-index: -2;
+            animation: floatGlow 12s ease-in-out infinite alternate-reverse;
+            pointer-events: none;
+        }
+
+        @keyframes floatGlow {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 50px) scale(1.1); }
+        }
+
         #app-container {
-            width: 90%;
-            max-width: 500px;
-            background: var(--glass);
-            border: 1px solid var(--border-glow);
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            width: 100%;
+            max-width: 480px;
             text-align: center;
-            backdrop-filter: blur(10px);
             z-index: 1;
+            perspective: 1000px; 
         }
 
-        .question-box {
-            font-size: 1.1rem;
-            min-height: 80px;
-            margin-bottom: 20px;
-            color: #00ffff;
+        .header-section {
+            margin-bottom: 30px;
+            transform: translateZ(30px);
         }
 
-        .cursor {
-            display: inline-block;
-            width: 10px;
-            height: 20px;
-            background: #00ffff;
+        /* --- YENİ: Başlık Glitch (Hata) Efekti --- */
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #a855f7, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+            animation: glitch-anim 4s infinite;
+        }
+
+        @keyframes glitch-anim {
+            0%, 94% { transform: translate(0, 0); text-shadow: 0 0 30px rgba(168, 85, 247, 0.3); }
+            95% { transform: translate(-2px, 1px); text-shadow: -3px 0 #ff003c, 3px 0 #00e5ff; }
+            96% { transform: translate(2px, -1px); text-shadow: 3px 0 #ff003c, -3px 0 #00e5ff; }
+            97% { transform: translate(0, 0); text-shadow: 0 0 30px rgba(168, 85, 247, 0.3); }
+            98% { transform: translate(-1px, 2px); text-shadow: -3px 0 #ff003c, 3px 0 #00e5ff; }
+            99% { transform: translate(1px, -2px); text-shadow: 3px 0 #ff003c, -3px 0 #00e5ff; }
+            100% { transform: translate(0, 0); text-shadow: 0 0 30px rgba(168, 85, 247, 0.3); }
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 0px;
+            font-weight: 400;
+        }
+
+        .glass-panel {
+            background: rgba(26, 29, 36, 0.65); 
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 35px 25px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255,255,255,0.05);
+            width: 100%;
+            position: relative;
+            transition: transform 0.2s ease-out;
+            transform-style: preserve-3d;
+        }
+
+        .glass-panel > * {
+            transform: translateZ(20px);
+        }
+
+        /* --- YENİ: Daktilo İmleci Stili --- */
+        .question-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .typing-cursor::after {
+            content: '█';
+            color: var(--accent-color);
+            animation: blink 1s step-end infinite;
             margin-left: 5px;
-            animation: blink 0.8s infinite;
+            font-size: 1.1rem;
+            vertical-align: bottom;
         }
 
-        @keyframes blink { 50% { opacity: 0; } }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
 
-        .btn-grid {
-            display: grid;
-            gap: 15px;
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            /* Daktilo bitene kadar görünmez */
+            opacity: 0; 
+            transition: opacity 0.4s ease-in-out;
         }
 
         button {
-            background: rgba(0, 0, 0, 0.5);
+            background-color: rgba(255, 255, 255, 0.04);
             color: var(--text-main);
-            border: 1px solid var(--border-glow);
-            padding: 15px;
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: bold;
-            transition: 0.3s;
-            text-transform: uppercase;
-            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 18px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 16px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
         }
 
         button:hover {
-            background: var(--border-glow);
+            background-color: rgba(139, 92, 246, 0.1);
+            border-color: rgba(139, 92, 246, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px var(--accent-glow);
+        }
+
+        button.clicked-effect {
+            transform: scale(0.96) translateY(0) !important;
+            background-color: rgba(139, 92, 246, 0.2) !important;
+            border-color: var(--accent-color) !important;
+            box-shadow: inset 0 0 15px var(--accent-glow), 0 0 15px var(--accent-glow) !important;
+            transition: all 0.15s ease-out !important;
+        }
+
+        button.primary {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-hover));
+            border: none;
+            margin-top: 24px;
+            box-shadow: 0 4px 15px var(--accent-glow);
+            color: white;
+            opacity: 0; /* Animasyonla gelecek */
+            transition: opacity 0.5s ease-in;
+        }
+
+        button.primary:hover {
+            box-shadow: 0 8px 25px var(--accent-glow);
+            background-color: transparent;
+        }
+
+        button.primary.clicked-effect {
+            transform: scale(0.92) !important;
+        }
+
+        #result-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeInScale 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .result-snack {
+            font-size: 2rem;
+            font-weight: 800;
             color: #fff;
-            box-shadow: 0 0 15px var(--border-glow);
-            transform: scale(1.02);
-            cursor: pointer;
+            margin: 20px 0 10px 0;
+            padding: 30px 20px;
+            width: 100%;
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            box-shadow: inset 0 0 30px rgba(139, 92, 246, 0.15), 0 10px 40px -10px var(--accent-glow);
+            text-shadow: 0 0 20px var(--accent-glow);
+            transition: all 0.2s ease;
         }
 
-        .hidden { display: none; }
-
-        /* --- RULET ANİMASYONU --- */
-        #roulette {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            color: var(--accent-neon);
-            margin: 20px 0;
-            font-weight: 700;
+        /* YENİ: Rulet Sırasında Bulanıklık */
+        .spinning {
+            filter: blur(2px);
+            transform: scale(1.05);
+            border-color: rgba(255, 255, 255, 0.2) !important;
+            box-shadow: none !important;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5) !important;
         }
 
-        .result-box {
-            padding: 20px;
-            border: 2px solid var(--accent-neon);
-            background: rgba(217, 70, 239, 0.1);
-            margin-top: 20px;
-            animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border-radius: 5px;
+        .suggestion-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            width: 100%;
+            font-size: 0.9rem;
+            color: #d1d5db;
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
         }
 
-        @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .suggestion-box span {
+            font-weight: 600;
+            color: #fff;
+        }
 
-        .suggestion {
-            font-size: 0.8rem;
-            color: #00ffff;
-            margin-top: 10px;
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: rgba(255,255,255,0.05);
+            border-radius: 3px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #a855f7);
+            width: 0%;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .slide-out-left {
+            animation: slideOutLeft 0.25s forwards cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .slide-in-right {
+            animation: slideInRight 0.25s forwards cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideOutLeft {
+            from { transform: translateX(0) translateZ(20px); opacity: 1; }
+            to { transform: translateX(-40px) translateZ(20px); opacity: 0; }
+        }
+        @keyframes slideInRight {
+            from { transform: translateX(40px) translateZ(20px); opacity: 0; }
+            to { transform: translateX(0) translateZ(20px); opacity: 1; }
+        }
+
+        .particle {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 100;
+            animation: popParticle 1s ease-out forwards;
+        }
+
+        @keyframes popParticle {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #custom-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            box-shadow: 0 0 10px var(--accent-glow), inset 0 0 5px var(--accent-glow);
+            transition: width 0.2s, height 0.2s, background-color 0.2s, box-shadow 0.2s;
+        }
+
+        #custom-cursor.hovering {
+            width: 45px;
+            height: 45px;
+            background-color: rgba(139, 92, 246, 0.15);
+            border-width: 1px;
+            box-shadow: 0 0 20px var(--accent-glow), inset 0 0 10px var(--accent-glow);
+        }
+
+        .cursor-ripple {
+            position: fixed;
+            border: 2px solid var(--accent-hover);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            opacity: 1;
+            pointer-events: none;
+            z-index: 9998;
+            animation: rippleEffect 0.4s ease-out forwards;
+        }
+
+        @keyframes rippleEffect {
+            to {
+                transform: translate(-50%, -50%) scale(2.5);
+                opacity: 0;
+            }
+        }
+        
+        @media (pointer: coarse) {
+            * { cursor: auto !important; }
+            #custom-cursor, .cursor-ripple { display: none !important; }
+            .glass-panel { transform: none !important; transition: none !important; }
+            .glass-panel > * { transform: none !important; }
         }
     </style>
 </head>
 <body>
 
+    <div class="cyberpunk-bg"></div>
     <div class="bg-overlay"></div>
+    <div class="dynamic-glow" id="glow-layer"></div>
+    <div id="custom-cursor"></div>
 
     <div id="app-container">
-        <div class="glitch-title">MIDNIGHT SNACK</div>
-        
-        <div id="quiz-ui">
-            <div class="question-box">
-                <span id="typewriter"></span><span class="cursor"></span>
-            </div>
-            <div id="options" class="btn-grid"></div>
+        <div class="header-section">
+            <h1 id="main-title">Izmir - Late-Night Snack</h1>
+            <p class="subtitle" id="main-subtitle">Let's find the perfect choice for you.</p>
         </div>
 
-        <div id="result-ui" class="hidden">
-            <div id="roulette">ANALYZING...</div>
-            <div id="final-result" class="hidden">
-                <p style="font-size: 0.8rem; color: #8b949e;">YOUR DATA MATCHES:</p>
-                <div class="result-box">
-                    <h2 id="snack-name" style="margin-bottom: 5px;"></h2>
-                    <p id="place-name" class="suggestion"></p>
-                </div>
-                <button onclick="location.reload()" style="margin-top: 30px; width: 100%;">REBOOT TEST</button>
+        <div id="quiz-container" class="glass-panel">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress"></div>
             </div>
+
+            <div id="quiz-content">
+                <div id="question-text" class="question-title"></div>
+                <div id="options-container" class="options-grid"></div>
+            </div>
+        </div>
+
+        <div id="result-container" class="glass-panel hidden">
+            <p class="subtitle" id="result-subtitle">Calculating optimal snack...</p>
+            <div id="snack-result" class="result-snack">...</div>
+            
+            <div id="snack-suggestion" class="suggestion-box hidden">
+                💡 Recommended spot: <span id="place-name">...</span>
+            </div>
+
+            <button class="primary hoverable hidden" id="restart-btn" onclick="startOver(event)">Find Another Snack</button>
         </div>
     </div>
 
     <script>
         const questions = [
-            { id: 'oneHand', text: "> CAN YOU EAT WITH ONE HAND?", options: [{l:"YES", v:"yes"}, {l:"NO", v:"no"}] },
-            { id: 'hunger', text: "> INITIALIZING HUNGER SCAN...", options: [{l:"LOW", v:"low"}, {l:"MEDIUM", v:"medium"}, {l:"HIGH", v:"high"}] },
-            { id: 'greasy', text: "> ARE GREASY FOODS ACCEPTABLE?", options: [{l:"AFFIRMATIVE", v:"yes"}, {l:"NEGATIVE", v:"no"}] },
-            { id: 'gameType', text: "> SELECT GAMEPLAY MODE:", options: [{l:"COMPETITIVE", v:"competitive"}, {l:"CASUAL", v:"casual"}] },
-            { id: 'budget', text: "> BUDGET ALLOCATION:", options: [{l:"LOW", v:"low"}, {l:"MEDIUM", v:"medium"}, {l:"HIGH", v:"high"}] }
+            {
+                id: 'oneHand',
+                text: "Can you eat with one hand?",
+                options: [
+                    { label: "Yes", value: "yes" },
+                    { label: "No", value: "no" }
+                ]
+            },
+            {
+                id: 'hunger',
+                text: "How hungry are you?",
+                options: [
+                    { label: "Not very hungry", value: "low" },
+                    { label: "Moderately hungry", value: "medium" },
+                    { label: "Very hungry", value: "high" }
+                ]
+            },
+            {
+                id: 'greasy',
+                text: "Are greasy foods okay?",
+                options: [
+                    { label: "Yes", value: "yes" },
+                    { label: "No", value: "no" }
+                ]
+            },
+            {
+                id: 'gameType',
+                text: "What type of game are you playing?",
+                options: [
+                    { label: "Competitive", value: "competitive" },
+                    { label: "Casual", value: "casual" }
+                ]
+            },
+            {
+                id: 'budget',
+                text: "What's your budget?",
+                options: [
+                    { label: "Low", value: "low" },
+                    { label: "Medium", value: "medium" },
+                    { label: "High", value: "high" }
+                ]
+            }
         ];
 
         const snacks = [
-            { name: "🌯 CHICKEN WRAP", place: "Dürümcü Kardeşler or Getir", tags: { oneHand: "yes", hunger: "medium", greasy: "no", gameType: "competitive", budget: "medium" } },
-            { name: "🍔 BURGER MENU", place: "Burger King or Local Smash Burger", tags: { oneHand: "no", hunger: "high", greasy: "yes", gameType: "casual", budget: "high" } },
-            { name: "🍕 PIZZA SLICE", place: "Pizza Locale or Dominos", tags: { oneHand: "yes", hunger: "medium", greasy: "yes", gameType: "casual", budget: "low" } },
-            { name: "🍜 NOODLES", place: "Wok to Walk", tags: { oneHand: "no", hunger: "high", greasy: "no", gameType: "casual", budget: "medium" } },
-            { name: "🥪 TOAST SANDWICH", place: "Kardeşler Büfe", tags: { oneHand: "yes", hunger: "medium", greasy: "no", gameType: "casual", budget: "low" } },
-            { name: "🍫 GRANOLA BAR", place: "Migros Jet", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "low" } },
-            { name: "🥨 CRACKERS", place: "Your pantry / Local Market", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "casual", budget: "low" } },
-            { name: "🍎 FRUIT BOWL", place: "Kitchen Fridge", tags: { oneHand: "no", hunger: "low", greasy: "no", gameType: "casual", budget: "medium" } },
-            { name: "🥡 INSTANT RAMEN", place: "Boil water, check cabinets!", tags: { oneHand: "no", hunger: "medium", greasy: "no", gameType: "casual", budget: "low" } },
-            { name: "💪 PROTEIN BAR", place: "Macrocenter", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "medium" } }
+            { name: "🌯 Chicken Wrap", place: "Dürümcü Kardeşler (Alsancak) or GetirYemek", tags: { oneHand: "yes", hunger: "medium", greasy: "no", gameType: "competitive", budget: "medium" } },
+            { name: "🍔 Burger Menu", place: "Burger King or Local Smash Burger Spot", tags: { oneHand: "no", hunger: "high", greasy: "yes", gameType: "casual", budget: "high" } },
+            { name: "🍕 Pizza Slice", place: "Pizza Locale or Dominos", tags: { oneHand: "yes", hunger: "medium", greasy: "yes", gameType: "casual", budget: "low" } },
+            { name: "🍜 Noodles", place: "Wok to Walk (Alsancak) or Noodle House", tags: { oneHand: "no", hunger: "high", greasy: "no", gameType: "casual", budget: "medium" } },
+            { name: "🥪 Toast Sandwich", place: "Kardeşler Büfe or Local Kumrucu", tags: { oneHand: "yes", hunger: "medium", greasy: "no", gameType: "casual", budget: "low" } },
+            { name: "🍫 Granola Bar", place: "Migros Jet or Nearest Corner Store", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "low" } },
+            { name: "🥨 Crackers", place: "Your own pantry or Local Market", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "casual", budget: "low" } },
+            { name: "🍎 Fruit Bowl", place: "Kitchen Fridge", tags: { oneHand: "no", hunger: "low", greasy: "no", gameType: "casual", budget: "medium" } },
+            { name: "🥡 Instant Ramen", place: "Boil water, check your cabinets!", tags: { oneHand: "no", hunger: "medium", greasy: "no", gameType: "casual", budget: "low" } },
+            { name: "💪 Protein Bar", place: "Macrocenter or Supplement Store", tags: { oneHand: "yes", hunger: "low", greasy: "no", gameType: "competitive", budget: "medium" } }
         ];
 
-        let currentIdx = 0;
-        let answers = {};
+        const colorMap = {
+            "🌯 Chicken Wrap": "#f59e0b",
+            "🍔 Burger Menu": "#ef4444",
+            "🍕 Pizza Slice": "#dc2626",
+            "🍜 Noodles": "#84cc16",
+            "🥪 Toast Sandwich": "#f97316",
+            "🍫 Granola Bar": "#e024c3",
+            "🥨 Crackers": "#eab308",
+            "🍎 Fruit Bowl": "#10b981",
+            "🥡 Instant Ramen": "#f59e0b",
+            "💪 Protein Bar": "#3b82f6"
+        };
 
-        function typeWriter(text, i, cb) {
-            if (i < text.length) {
-                document.getElementById("typewriter").innerHTML = text.substring(0, i+1);
-                setTimeout(() => typeWriter(text, i + 1, cb), 40);
-            } else if (cb) { cb(); }
+        let currentQuestionIndex = 0;
+        let userAnswers = {};
+        let typingTimeoutId = null;
+
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const quizContainerEl = document.getElementById('quiz-container');
+        const quizContentEl = document.getElementById('quiz-content');
+        const resultContainerEl = document.getElementById('result-container');
+        const snackResultEl = document.getElementById('snack-result');
+        const resultSubtitleEl = document.getElementById('result-subtitle');
+        const suggestionBoxEl = document.getElementById('snack-suggestion');
+        const placeNameEl = document.getElementById('place-name');
+        const restartBtn = document.getElementById('restart-btn');
+        const progressEl = document.getElementById('progress');
+        const customCursor = document.getElementById('custom-cursor');
+        const glowLayer = document.getElementById('glow-layer');
+
+        let mouseX = window.innerWidth / 2;
+        let mouseY = window.innerHeight / 2;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            customCursor.style.left = mouseX + 'px';
+            customCursor.style.top = mouseY + 'px';
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.clientX === 0 && e.clientY === 0) return;
+            const ripple = document.createElement('div');
+            ripple.classList.add('cursor-ripple');
+            ripple.style.left = e.clientX + 'px';
+            ripple.style.top = e.clientY + 'px';
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 400);
+        });
+
+        function attachCursorHoverEvents() {
+            const hoverables = document.querySelectorAll('button');
+            hoverables.forEach(el => {
+                el.addEventListener('mouseenter', () => customCursor.classList.add('hovering'));
+                el.addEventListener('mouseleave', () => customCursor.classList.remove('hovering'));
+            });
+        }
+        
+        const panels = document.querySelectorAll('.glass-panel');
+        panels.forEach(panel => {
+            panel.addEventListener('mousemove', (e) => {
+                if(window.innerWidth < 768) return; 
+                const rect = panel.getBoundingClientRect();
+                const x = e.clientX - rect.left; 
+                const y = e.clientY - rect.top;  
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -10; 
+                const rotateY = ((x - centerX) / centerX) * 10;
+                panel.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+            panel.addEventListener('mouseleave', () => {
+                panel.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            });
+        });
+
+        function typeWriterEffect(text, callback) {
+            clearTimeout(typingTimeoutId);
+            questionTextEl.innerHTML = '';
+            questionTextEl.classList.add('typing-cursor');
+            
+            let i = 0;
+            function type() {
+                if (i < text.length) {
+                    questionTextEl.innerHTML += text.charAt(i);
+                    i++;
+                    // Daktilo hızı (40ms çok idealdir)
+                    typingTimeoutId = setTimeout(type, 30);
+                } else {
+                    questionTextEl.classList.remove('typing-cursor');
+                    if(callback) callback();
+                }
+            }
+            type();
         }
 
-        function showQuestion() {
-            const q = questions[currentIdx];
-            document.getElementById("options").innerHTML = "";
-            document.getElementById("typewriter").innerHTML = "";
+        function initApp() {
+            currentQuestionIndex = 0;
+            userAnswers = {};
             
-            typeWriter(q.text, 0, () => {
-                q.options.forEach(opt => {
-                    const b = document.createElement("button");
-                    b.innerText = opt.l;
-                    b.onclick = () => {
-                        answers[q.id] = opt.v;
-                        currentIdx++;
-                        if (currentIdx < questions.length) showQuestion();
-                        else showResult();
-                    };
-                    document.getElementById("options").appendChild(b);
-                });
+            quizContainerEl.classList.remove('hidden');
+            resultContainerEl.classList.add('hidden');
+            suggestionBoxEl.classList.add('hidden'); 
+            suggestionBoxEl.style.opacity = '0';
+            restartBtn.classList.add('hidden');
+            restartBtn.style.opacity = '0';
+
+            quizContainerEl.style.transform = 'none'; 
+            quizContentEl.classList.remove('slide-out-left', 'slide-in-right');
+            
+            glowLayer.style.background = 'radial-gradient(circle, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 100%)';
+            snackResultEl.style.borderColor = 'rgba(139, 92, 246, 0.4)';
+            snackResultEl.style.boxShadow = 'inset 0 0 30px rgba(139, 92, 246, 0.15), 0 10px 40px -10px var(--accent-glow)';
+            snackResultEl.style.textShadow = '0 0 20px var(--accent-glow)';
+
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestionIndex];
+            const progressPercentage = (currentQuestionIndex / questions.length) * 100;
+            progressEl.style.width = `${progressPercentage}%`;
+
+            optionsContainerEl.style.opacity = '0';
+            optionsContainerEl.innerHTML = '';
+
+            // Seçenekleri hazırla ama daktilo bitene kadar gizle
+            q.options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.textContent = option.label;
+                btn.classList.add('hoverable'); 
+                btn.onclick = (e) => {
+                    btn.classList.add('clicked-effect');
+                    setTimeout(() => handleAnswer(q.id, option.value), 150);
+                };
+                optionsContainerEl.appendChild(btn);
             });
+            
+            // Daktilo efekti ile soruyu yaz, bitince butonları göster
+            typeWriterEffect(q.text, () => {
+                optionsContainerEl.style.opacity = '1';
+                attachCursorHoverEvents();
+            });
+        }
+
+        function handleAnswer(questionId, answerValue) {
+            userAnswers[questionId] = answerValue;
+            currentQuestionIndex++;
+            quizContentEl.classList.add('slide-out-left');
+            quizContentEl.classList.remove('slide-in-right');
+
+            setTimeout(() => {
+                if (currentQuestionIndex < questions.length) {
+                    renderQuestion();
+                    quizContentEl.classList.remove('slide-out-left');
+                    quizContentEl.classList.add('slide-in-right');
+                } else {
+                    showResult();
+                }
+            }, 250);
         }
 
         function showResult() {
-            document.getElementById("quiz-ui").classList.add("hidden");
-            document.getElementById("result-ui").classList.remove("hidden");
-            
-            let rouletteIdx = 0;
-            const rouletteEl = document.getElementById("roulette");
-            const interval = setInterval(() => {
-                rouletteEl.innerText = snacks[rouletteIdx % snacks.length].name;
-                rouletteIdx++;
-            }, 80);
+            progressEl.style.width = '100%';
 
-            setTimeout(() => {
-                clearInterval(interval);
-                calculateWinner();
-            }, 2500);
-        }
-
-        function calculateWinner() {
-            let best = snacks[0];
-            let max = -1;
-            snacks.forEach(s => {
+            // Kazananı hesapla
+            let bestSnack = snacks[0];
+            let maxScore = -1;
+            snacks.forEach(snack => {
                 let score = 0;
-                for (let k in answers) { if (s.tags[k] === answers[k]) score++; }
-                if (score > max) { max = score; best = s; }
+                for (const [key, val] of Object.entries(userAnswers)) {
+                    if (snack.tags[key] === val) score++;
+                }
+                if (score > maxScore) {
+                    maxScore = score;
+                    bestSnack = snack;
+                }
             });
 
-            document.getElementById("roulette").classList.add("hidden");
-            document.getElementById("final-result").classList.remove("hidden");
-            document.getElementById("snack-name").innerText = best.name;
-            document.getElementById("place-name").innerText = "SPOT: " + best.place;
+            quizContainerEl.classList.add('hidden');
+            resultContainerEl.classList.remove('hidden');
+            resultContainerEl.style.transform = 'none'; 
+            
+            // RULET (SLOT) EFEKTİ BAŞLIYOR
+            resultSubtitleEl.textContent = "Hacking database...";
+            snackResultEl.classList.add('spinning');
+            
+            let spins = 0;
+            const maxSpins = 25; // Ekranda 25 kez rastgele yemek dönecek
+            const spinInterval = 80; // Hız (milisaniye)
+
+            const roulette = setInterval(() => {
+                const randomSnack = snacks[Math.floor(Math.random() * snacks.length)];
+                snackResultEl.textContent = randomSnack.name;
+                spins++;
+
+                if (spins >= maxSpins) {
+                    clearInterval(roulette);
+                    revealFinal(bestSnack);
+                }
+            }, spinInterval);
         }
 
-        showQuestion();
+        function revealFinal(bestSnack) {
+            // Rulet efektini temizle
+            snackResultEl.classList.remove('spinning');
+            resultSubtitleEl.textContent = "Your optimal snack is:";
+            
+            // Gerçek sonucu yaz
+            snackResultEl.textContent = bestSnack.name;
+            if(bestSnack.place) {
+                placeNameEl.textContent = bestSnack.place;
+                suggestionBoxEl.classList.remove('hidden');
+                setTimeout(() => suggestionBoxEl.style.opacity = '1', 100);
+            }
+
+            // Yeniden başla butonunu getir
+            restartBtn.classList.remove('hidden');
+            setTimeout(() => restartBtn.style.opacity = '1', 300);
+            
+            // Parlama ve Renk efektleri
+            const glowColor = colorMap[bestSnack.name] || '#8b5cf6';
+            glowLayer.style.background = `radial-gradient(circle, ${glowColor}44 0%, transparent 70%)`;
+            snackResultEl.style.borderColor = glowColor;
+            snackResultEl.style.boxShadow = `inset 0 0 30px ${glowColor}33, 0 10px 40px -10px ${glowColor}88`;
+            snackResultEl.style.textShadow = `0 0 20px ${glowColor}`;
+            suggestionBoxEl.style.borderColor = `rgba(${glowColor.replace('#', '')}, 0.5)`;
+
+            attachCursorHoverEvents();
+            fireConfetti(glowColor); 
+        }
+
+        function fireConfetti(accentColor) {
+            const colors = [accentColor, '#ffffff', '#e2e8f0'];
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                const tx = (Math.random() - 0.5) * 600 + 'px';
+                const ty = (Math.random() - 0.5) * 600 + 'px';
+                particle.style.setProperty('--tx', tx);
+                particle.style.setProperty('--ty', ty);
+                
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.boxShadow = `0 0 12px ${particle.style.backgroundColor}`;
+
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 1000);
+            }
+        }
+
+        function startOver(event) {
+            if(event) {
+                const btn = event.target;
+                btn.classList.add('clicked-effect');
+                setTimeout(() => {
+                    btn.classList.remove('clicked-effect');
+                    initApp();
+                }, 200);
+            } else {
+                initApp();
+            }
+        }
+
+        window.onload = () => {
+            initApp();
+        };
     </script>
 </body>
 </html>
